@@ -1,5 +1,5 @@
 const N = 10
-const L = 3
+const L = 4
 
 let size = N * (2 * L - 1)  // ( (L-1)+(L-2)+...+(L-3) )* 2 - 1
 
@@ -34,35 +34,41 @@ printMatrix(A, f, '#matrix__ready')
 
 
 function mainCalc() {
-  for (let i = 0; i < 1; i += step(i)) {
+  let strIterator = 0;
+
+  for (let i = 0; i < 6; i += step(i)) {
 
     let width
-    if (i < L) {
-      width = L + i
-    } else if (i >= L - 1 && i <= N - (L - 1)) {
-      width = 2 * L + 1
+    if (strIterator <= N - (L - 1)) {
+      width = L
     } else {
-      width = L + (N - i - 1)
+      width = N - strIterator
     }
+    console.log('Width ' + width);
 
     let k = A[i]
-    for (let j = i; j < width; j++) {
+    for (let j = i; j < i + width; j++) {
       A[j] /= k
     }
-    f[i] /= k
+    f[strIterator] /= k
 
-    let h = step(i)
+
+    let h = i + step(strIterator) - 1
     for (let j = 0; j < L - 1 ; j++) {
-      let coef = A[i + h]
+      let coef = A[h]
       let iter = 0;
       for (let l = h; l < h + width; l++) {
+        if (i != 0) {
+          console.log(A[l])
+        }
         A[l] += A[i + iter] * -coef
         iter++
       }
-      f[i + j + 1] += f[i] * -coef
-      h += step(i + j + 1)
+      f[strIterator + j + 1] += f[strIterator] * -coef
+      h += step(strIterator) - strIterator
     }
 
+    strIterator++
   }
 
   // let k = A[0]
@@ -88,9 +94,9 @@ function mainCalc() {
 
 function step(str) {
   if (str <= Math.floor(L / 2)) {
-    return str + L
-  } else if (str >= N - Math.floor(L / 2)) {
-    return N - str + 1 + L
+    return str + L + 1
+  } else if (str <= N - Math.floor(L / 2)) {
+    return L * 2 - 1
   } else {
     return L * 2 - 2
   }

@@ -3,6 +3,11 @@ const L = 3
 const A = [-8, 0, 4, -5, 8, 9, 5, 5, -6, -8, 6, 1, -2, -6, 0, 0, -2, 3, 8, -8, -3, 3, 4, 10, -4, -10, 9, 1, -1, -5, -9, 8, -1, -8, 8, 9, 7, 0, -1, -4, 3, 6, -10, -10]
 const f = [-8, 12, -2, -32, -6, 33, -16, 9, 1, -30]
 
+// const N = 10
+// const L = 4
+// const A = [9, 8, 0, -7, -3, -1, 9, 9, 10, -4, -5, 1, 5, -5, -2, -3, 5, 8, 10, -9, 6, -6, -9, 5, -8, -6, -4, -5, -1, 6, -10, -1, 8, 0, 9, -3, 2, 4, -4, 5, -7, -4, 9, 3, -10, 2, -10, -4, 3, 1, 6, -10, -5, 8, 4, 4, -8, 5]
+// const f = [-8, 12, -2, -32, -6, 33, -16, 9, 1, -30]
+
 printMatrix(A, f, '#matrix')
 
 mainCalc()
@@ -11,14 +16,9 @@ printMatrix(A, f, '#matrix__ready')
 
 
 function mainCalc() {
-  let minusArray = new Array(L-1)
-  for (let i = 0; i < minusArray.length; i++) {
-    minusArray[i] = i;
-  }
-
   let strIterator = 0;
 
-  for (let i = 0; i < 8; i += step(i)) {
+  for (let i = 0; i < 4; i += step(i)) {
 
     let width
     if (strIterator <= N - (L - 1)) {
@@ -33,79 +33,61 @@ function mainCalc() {
     }
     f[strIterator] /= k
 
-    let minusArrayIterator = 0
-
     let h = i + step(strIterator) - 1
     for (let j = 0; j < L - 1 ; j++) {
       let coef = A[h]
-      let iter = 0;
+      let iter = 0
       for (let l = h; l < h + width; l++) {
         A[l] += A[i + iter] * -coef
         iter++
       }
       f[strIterator + j + 1] += f[strIterator] * -coef
-      h += step(strIterator + j) - minusArray[minusArrayIterator]
-      console.log(strIterator, minusArrayIterator) // какого х
+      if (i > 0) {
+        h += step(strIterator + j) - j
+      } else {
+        h += step(strIterator + j)
+      }
     }
 
-    minusArrayIterator++
     strIterator++
 
   }
 
-  // for (let i = 9; i < 10; i += step(i)) {
 
-  //   let width
-  //   if (strIterator <= N - (L - 1)) {
-  //     width = L
-  //   } else {
-  //     width = N - strIterator
-  //   }
+  for (let i = 4; i < 6; i += step(i)) {
 
-  //   let k = A[i]
-  //   for (let j = i; j < i + width; j++) {
-  //     A[j] /= k
-  //   }
-  //   f[strIterator] /= k
+    let width
+    if (strIterator <= N - (L - 1)) {
+      width = L
+    } else {
+      width = N - strIterator
+    }
 
-  //   let h = i + step(strIterator) - 1
-  //   for (let j = 0; j < L - 1 ; j++) { // хуйня после нулевого
-  //     console.log(step(strIterator + j));
-  //     let coef = A[h]
-  //     let iter = 0;
-  //     for (let l = h; l < h + width; l++) {
-  //       A[l] += A[i + iter] * -coef
-  //       iter++
-  //     }
-  //     f[strIterator + j + 1] += f[strIterator] * -coef
-  //     h += step(strIterator + j) - 1
-  //   }
+    let k = A[i]
+    for (let j = i; j < i + width; j++) {
+      A[j] /= k
+    }
+    f[strIterator] /= k
 
-  //   strIterator++
-  // }
+    let h = i + step(strIterator) - 1
+    for (let j = 0; j < L - 1 ; j++) {
+      let coef = A[h]
+      let iter = 0
+      for (let l = h; l < h + width; l++) {
+        A[l] += A[i + iter] * -coef
+        iter++
+      }
+      f[strIterator + j + 1] += f[strIterator] * -coef
+      if (i > 0) {
+        h += step(strIterator + j) - j -1
+      } else {
+        h += step(strIterator + j) - j - 2
+      }
+    }
 
+    strIterator++
 
-
-
-  // let k = A[0]
-  // for (let i = 0; i < L; i++) {
-  //   A[i] /= k
-  // }
-  // f[0] /= k
-
-  // k = A[L]
-  // for (let i = L; i < 2 * L; i++) {
-  //   A[i] += A[i - L] * -k
-  // }
-  // f[1] += f[0] * -k
-
-  // k = A[2 * L + 1]
-  // for (let i = 2 * L + 1; i < 3 * L + 1; i++) {
-  //   console.log(A[i - (2 * L + 1)])
-  //   A[i] += A[i - (2 * L + 1)] * -k
-  // }
-  // f[2] += f[0] * -k
-
+  }
 }
 
 function step(str) {
