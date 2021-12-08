@@ -1,4 +1,4 @@
-const N = 12
+const N = 14
 const L = 4
 
 let size = N * (2 * L - 1)  // ( (L-1)+(L-2)+...+(L-3) )* 2 - 1
@@ -6,37 +6,35 @@ let size = N * (2 * L - 1)  // ( (L-1)+(L-2)+...+(L-3) )* 2 - 1
 for (let i = 1; i < L; i++) {
   size -= (L - i) * 2
 }
-console.log(size)
 
 let A = []
 for (let i = 0; i < size; i++) {
   A.push(randomInteger(-10,10))
 }
 
-console.log(A)
-
-
-function randomInteger(min, max) {
-  // получить случайное число от (min-0.5) до (max+0.5)
-  let rand = min - 0.5 + Math.random() * (max - min + 1);
-  return Math.round(rand);
-}
-
-
-// let f = [7, 9, 5, 4, 3, 1, 2, 0, 8, -3]
 let f = []
 for (let i = 0; i < N; i++) {
   f.push(randomInteger(-10,10))
 }
 
+let fCopy = [...f]
+let ACopy = [...A]
+
+function randomInteger(min, max) {
+  return +(min - 0.5 + Math.random() * (max - min + 1)).toFixed(2)
+}
+
+
 printMatrix(A, f, '#matrix')
 
-mainCalc()
+mainCalc(A, f)
+
+averageRelativeError()
 
 printMatrix(A, f, '#matrix__ready')
 
 
-function mainCalc() {
+function mainCalc(A, f) {
   let strIterator = 0
 
   for (let i = 0; i < A.length; i += step(strIterator - 1)) {
@@ -92,7 +90,6 @@ function mainCalc() {
       let coef = A[h + j + 1]
       let iter = 0
       for (let l = h + j + 1; l < (h + j + 1) + width; l++) {
-        console.log(l, i, j)
         A[l] += A[i + iter] * -coef
         iter++
       }
@@ -164,4 +161,67 @@ function printMatrix(Arr, f, DomId) {
     tr.innerHTML = line
     tableReady.append(tr)
   }
+}
+
+function averageRelativeError() {
+  let trueA = [...ACopy]
+
+  A_square = new Array(N)
+  for (let i = 0; i < N; i++) {
+    A_square[i] = new Array(N)
+  }
+
+  for (let j = 0; j < L - 1; j++) {
+    for (let k = 0; k < j + L; k++) {
+      A_square[j][k] = ACopy.shift()
+    }
+    for (let k = j + L; k < N; k++) {
+      A_square[j][k] = 0
+    }
+  }
+  for (let j = L - 1; j < N - L + 1; j++) {
+    for (let k = 0; k < j - L + 1; k++) {
+      A_square[j][k] = 0
+    }
+    for (let k = j - L + 1; k < j - L - 1 + 2 * L + 1; k++) {
+      A_square[j][k] = ACopy.shift()
+    }
+    for (let k = j + L; k < N; k++) {
+      A_square[j][k] = 0
+    }
+  }
+  for (let j = N - L + 1; j < N; j++) {
+    for (let k = 0; k < j - L + 1; k++) {
+      A_square[j][k] = 0
+    }
+    for (let k = j - L + 1; k < N; k++) {
+      A_square[j][k] = ACopy.shift()
+    }
+  }
+
+  let fNew = new Array(N).fill(0)
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      fNew[i] += A_square[i][j] * fCopy[j]
+    }
+  }
+
+  mainCalc(trueA, fNew)
+
+  let max = 0
+  for (let i = 0; i < N; i++) {
+    let razn = Math.abs(fNew[i] - fCopy[i])
+
+    if (razn > max) {
+      max = razn
+    }
+  }
+
+  let err = document.createElement('div')
+  err.className = 'solution-error'
+  err.innerHTML = `Относительная погрешность: ${max}`
+  let matrixReady = document.querySelector('#matrix__ready')
+  matrixReady.before(err)
+
+  console.log('Относительная погрешность: ' + max)
 }
