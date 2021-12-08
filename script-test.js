@@ -70,35 +70,15 @@ function mainCalc() {
 
     strIterator++
   }
-
-  // let k = A[0]
-  // for (let i = 0; i < L; i++) {
-  //   A[i] /= k
-  // }
-  // f[0] /= k
-
-  // k = A[L]
-  // for (let i = L; i < 2 * L; i++) {
-  //   A[i] += A[i - L] * -k
-  // }
-  // f[1] += f[0] * -k
-
-  // k = A[2 * L + 1]
-  // for (let i = 2 * L + 1; i < 3 * L + 1; i++) {
-  //   console.log(A[i - (2 * L + 1)])
-  //   A[i] += A[i - (2 * L + 1)] * -k
-  // }
-  // f[2] += f[0] * -k
-
 }
 
 function step(str) {
-  if (str <= Math.floor(L / 2)) {
+  if (str < L - 1) {
     return str + L + 1
-  } else if (str <= N - Math.floor(L / 2)) {
+  } else if (str >= L - 1 && str < N - L + 1) {
     return L * 2 - 1
   } else {
-    return L * 2 - 2
+    return N - str - 1 + L
   }
 }
 

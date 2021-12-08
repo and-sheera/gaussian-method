@@ -16,16 +16,18 @@ printMatrix(A, f, '#matrix__ready')
 
 
 function mainCalc() {
-  let strIterator = 0;
+  let strIterator = 0
 
-  for (let i = 0; i < 4; i += step(i)) {
+  for (let i = 0; i < 44; i += step(strIterator - 1)) {
 
     let width
-    if (strIterator <= N - (L - 1)) {
+    if (strIterator < N - (L - 1)) {
       width = L
     } else {
       width = N - strIterator
     }
+
+    console.log('width' + width)
 
     let k = A[i]
     for (let j = i; j < i + width; j++) {
@@ -33,70 +35,35 @@ function mainCalc() {
     }
     f[strIterator] /= k
 
-    let h = i + step(strIterator) - 1
-    for (let j = 0; j < L - 1 ; j++) {
-      let coef = A[h]
+    let h = i + step(strIterator)
+    let end = L - 1
+    if (N - strIterator <= L) {
+      end = N - strIterator - 1
+    }
+    for (let j = 0; j < end; j++) {
+      let coef = A[h - j - 1]
       let iter = 0
-      for (let l = h; l < h + width; l++) {
+      for (let l = h - j - 1; l < (h - j - 1) + width; l++) {
         A[l] += A[i + iter] * -coef
+        console.log(l, i, iter);
         iter++
       }
       f[strIterator + j + 1] += f[strIterator] * -coef
-      if (i > 0) {
-        h += step(strIterator + j) - j
-      } else {
-        h += step(strIterator + j)
-      }
+      h += step(strIterator + j + 1)
+      console.log('step ' + step(strIterator + j + 1), strIterator, j)
     }
-
     strIterator++
-
   }
 
-
-  for (let i = 4; i < 6; i += step(i)) {
-
-    let width
-    if (strIterator <= N - (L - 1)) {
-      width = L
-    } else {
-      width = N - strIterator
-    }
-
-    let k = A[i]
-    for (let j = i; j < i + width; j++) {
-      A[j] /= k
-    }
-    f[strIterator] /= k
-
-    let h = i + step(strIterator) - 1
-    for (let j = 0; j < L - 1 ; j++) {
-      let coef = A[h]
-      let iter = 0
-      for (let l = h; l < h + width; l++) {
-        A[l] += A[i + iter] * -coef
-        iter++
-      }
-      f[strIterator + j + 1] += f[strIterator] * -coef
-      if (i > 0) {
-        h += step(strIterator + j) - j -1
-      } else {
-        h += step(strIterator + j) - j - 2
-      }
-    }
-
-    strIterator++
-
-  }
 }
 
 function step(str) {
-  if (str <= Math.floor(L / 2)) {
+  if (str < L - 1) {
     return str + L + 1
-  } else if (str <= N - Math.floor(L / 2)) {
+  } else if (str >= L - 1 && str < N - L + 1) {
     return L * 2 - 1
   } else {
-    return L * 2 - 2
+    return N - str - 1 + L
   }
 }
 
