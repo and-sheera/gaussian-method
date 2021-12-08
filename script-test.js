@@ -1,4 +1,4 @@
-const N = 10
+const N = 12
 const L = 4
 
 let size = N * (2 * L - 1)  // ( (L-1)+(L-2)+...+(L-3) )* 2 - 1
@@ -24,7 +24,11 @@ function randomInteger(min, max) {
 }
 
 
-let f = [7, 9, 5, 4, 3, 1, 2, 0, 8, -3]
+// let f = [7, 9, 5, 4, 3, 1, 2, 0, 8, -3]
+let f = []
+for (let i = 0; i < N; i++) {
+  f.push(randomInteger(-10,10))
+}
 
 printMatrix(A, f, '#matrix')
 
@@ -34,17 +38,18 @@ printMatrix(A, f, '#matrix__ready')
 
 
 function mainCalc() {
-  let strIterator = 0;
+  let strIterator = 0
 
-  for (let i = 0; i < 6; i += step(i)) {
+  for (let i = 0; i < A.length; i += step(strIterator - 1)) {
 
     let width
-    if (strIterator <= N - (L - 1)) {
+    if (strIterator < N - (L - 1)) {
       width = L
     } else {
       width = N - strIterator
     }
-    console.log('Width ' + width);
+
+    console.log('width' + width)
 
     let k = A[i]
     for (let j = i; j < i + width; j++) {
@@ -52,22 +57,23 @@ function mainCalc() {
     }
     f[strIterator] /= k
 
-
-    let h = i + step(strIterator) - 1
-    for (let j = 0; j < L - 1 ; j++) {
-      let coef = A[h]
-      let iter = 0;
-      for (let l = h; l < h + width; l++) {
-        if (i != 0) {
-          console.log(A[l])
-        }
+    let h = i + step(strIterator)
+    let end = L - 1
+    if (N - strIterator <= L) {
+      end = N - strIterator - 1
+    }
+    for (let j = 0; j < end; j++) {
+      let coef = A[h - j - 1]
+      let iter = 0
+      for (let l = h - j - 1; l < (h - j - 1) + width; l++) {
         A[l] += A[i + iter] * -coef
+        console.log(l, i, iter);
         iter++
       }
       f[strIterator + j + 1] += f[strIterator] * -coef
-      h += step(strIterator) - strIterator
+      h += step(strIterator + j + 1)
+      console.log('step ' + step(strIterator + j + 1), strIterator, j)
     }
-
     strIterator++
   }
 }

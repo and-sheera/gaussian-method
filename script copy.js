@@ -1,86 +1,70 @@
 // const N = 10
 // const L = 3
+// const A = [-8, 0, 4, -5, 8, 9, 5, 5, -6, -8, 6, 1, -2, -6, 0, 0, -2, 3, 8, -8, -3, 3, 4, 10, -4, -10, 9, 1, -1, -5, -9, 8, -1, -8, 8, 9, 7, 0, -1, -4, 3, 6, -10, -10]
+// const f = [-8, 12, -2, -32, -6, 33, -16, 9, 1, -30]
+
 const N = 10
 const L = 4
-
-let size = N * (2 * L - 1)  // ( (L-1)+(L-2)+...+(L-3) )* 2 - 1
-
-for (let i = 1; i < L; i++) {
-  size -= (L - i) * 2
-}
-// size -= 1
-console.log(size)
-
-// let A = [ -8, 0, 4, -5, 8, 9, 5, 5, -6, -8, 6, 1, -2, -6, 0, 0, -2, 3, 8, -8, -3, 3, 4, 10, -4, -10, 9, 1, -1, -5, -9, 8, -1, -8, 8, 9, 0, -1, -4 ]
-// let A = [ -8, 0, 4, -5, 8, 9, 5, 5, -6, -8, 6, 1, -2, -6, 0, 0, -2, 3, 8, -8, -3, 3, 4, 10, -4, -10, 9, 1, -1, -5, -9, 8, -1, -8, 8, 9, 7, 0, -1, -4, 3, 6, -10, -10 ]
-let A = []
-for (let i = 0; i < size; i++) {
-  A.push(randomInteger(-10,10))
-}
-
-console.log(A)
-
-
-function randomInteger(min, max) {
-  // получить случайное число от (min-0.5) до (max+0.5)
-  let rand = min - 0.5 + Math.random() * (max - min + 1);
-  return Math.round(rand);
-}
-
-
-let f = [7, 9, 5, 4, 3, 1, 2, 0, 8, -3]
+const A = [9, 8, 0, -7, -3, -1, 9, 9, 10, -4, -5, 1, 5, -5, -2, -3, 5, 8, 10, -9, 6, -6, -9, 5, -8, -6, -4, -5, -1, 6, -10, -1, 8, 0, 9, -3, 2, 4, -4, 5, -7, -4, 9, 3, -10, 2, -10, -4, 3, 1, 6, -10, -5, 8, 4, 4, -8, 5]
+const f = [-8, 12, -2, -32, -6, 33, -16, 9, 1, -30]
 
 printMatrix(A, f, '#matrix')
 
+mainCalc()
+
+printMatrix(A, f, '#matrix__ready')
 
 
+function mainCalc() {
+  let strIterator = 0
 
-function getValue(i, j) {
-  if (L == 1) {
-    return A[i]
-  }
-  if (L == 2) {
-    return A[i + j +i]
-  }
-  // if (L == 3) {
-  //   if (i >= 9) {
-  //     return A[j + i + (i * L - (i - 7))]
-  //   } else {
-  //     return A[j + i + (i * L - Math.sign(i))]
-  //   }
-  // }
-  // if (L > 4) {
-  //   return A[j + i + (i * L - Math.sign(i))]
-  // }
-  if (L == 3) {
-    if (i == N - 1) {
-      return A[j + i + (i * L - 2)]
+  for (let i = 0; i < A.length; i += step(strIterator - 1)) {
+
+    let width
+    if (strIterator < N - (L - 1)) {
+      width = L
     } else {
-      return A[j + i + (i * L - Math.sign(i))]
+      width = N - strIterator
     }
-  }
-  if (L >= 4) { // 10 10
-    // if (i >= N - L) {
-    //   console.log(1);
-    //   return A[j + i + (i * L - 2)]
-    // }
-    // if (i >= L - 1) {
-    //   return A[j + i + (i * L + (L - i))]
-    // }
-    if (i >= L - 1 && i <= N - L + 1) {
-      return A[j + i + (i * L) + (i - L + 1)]
+
+    console.log('width' + width)
+
+    let k = A[i]
+    for (let j = i; j < i + width; j++) {
+      A[j] /= k
     }
-    if (i > N - L + 1) {
-      let k = i - (N - L + 2) * 2
-      console.log(k);
-      console.log('summ ' + (j + i + (i * L) + i - L))
-      return A[j + i + (i * L) + i - L]
+    f[strIterator] /= k
+
+    let h = i + step(strIterator)
+    let end = L - 1
+    if (N - strIterator <= L) {
+      end = N - strIterator - 1
     }
-    return A[j + i + (i * L - Math.sign(i))]
+    for (let j = 0; j < end; j++) {
+      let coef = A[h - j - 1]
+      let iter = 0
+      for (let l = h - j - 1; l < (h - j - 1) + width; l++) {
+        A[l] += A[i + iter] * -coef
+        console.log(l, i, iter);
+        iter++
+      }
+      f[strIterator + j + 1] += f[strIterator] * -coef
+      h += step(strIterator + j + 1)
+      console.log('step ' + step(strIterator + j + 1), strIterator, j)
+    }
+    strIterator++
   }
 }
 
-window.getValue = getValue
+function step(str) {
+  if (str < L - 1) {
+    return str + L + 1
+  } else if (str >= L - 1 && str < N - L + 1) {
+    return L * 2 - 1
+  } else {
+    return N - str - 1 + L
+  }
+}
 
 function printMatrix(Arr, f, DomId) {
   let A = [...Arr]
