@@ -1,6 +1,8 @@
 const N = 14
 const L = 4
 
+const isBad = true
+
 let size = N * (2 * L - 1)  // ( (L-1)+(L-2)+...+(L-3) )* 2 - 1
 
 for (let i = 1; i < L; i++) {
@@ -15,6 +17,14 @@ for (let i = 0; i < size; i++) {
 let f = []
 for (let i = 0; i < N; i++) {
   f.push(randomInteger(-10,10))
+}
+
+if (isBad) {
+  let strIterator = 0
+  for (let i = 0; i < A.length; i += step(strIterator - 1)) {
+    A[i] = +(Math.random()).toFixed(2)
+    strIterator++
+  }
 }
 
 let fCopy = [...f]
