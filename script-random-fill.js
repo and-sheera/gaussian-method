@@ -6,7 +6,6 @@ let size = N * (2 * L - 1)  // ( (L-1)+(L-2)+...+(L-3) )* 2 - 1
 for (let i = 1; i < L; i++) {
   size -= (L - i) * 2
 }
-// size -= 1
 console.log(size)
 
 let A = []
@@ -49,8 +48,6 @@ function mainCalc() {
       width = N - strIterator
     }
 
-    console.log('width' + width)
-
     let k = A[i]
     for (let j = i; j < i + width; j++) {
       A[j] /= k
@@ -67,14 +64,42 @@ function mainCalc() {
       let iter = 0
       for (let l = h - j - 1; l < (h - j - 1) + width; l++) {
         A[l] += A[i + iter] * -coef
-        console.log(l, i, iter);
         iter++
       }
       f[strIterator + j + 1] += f[strIterator] * -coef
       h += step(strIterator + j + 1)
-      console.log('step ' + step(strIterator + j + 1), strIterator, j)
     }
     strIterator++
+  }
+
+
+  strIterator = N - 1
+
+  for (let i = A.length - 1; i >= 0; i -= step(strIterator)) {
+    let width
+    if (strIterator < N - (L - 1)) {
+      width = L
+    } else {
+      width = N - strIterator
+    }
+
+    let h = i - step(strIterator - 1)
+    let end = L - 1
+    if (strIterator < L) {
+      end = strIterator //чекнуть на последниъ этапах
+    }
+    for (let j = 0; j < end; j++) {
+      let coef = A[h + j + 1]
+      let iter = 0
+      for (let l = h + j + 1; l < (h + j + 1) + width; l++) {
+        console.log(l, i, j)
+        A[l] += A[i + iter] * -coef
+        iter++
+      }
+      f[strIterator - j - 1] += f[strIterator] * -coef
+      h -= step(strIterator - j - 2)
+    }
+    strIterator--
   }
 }
 
